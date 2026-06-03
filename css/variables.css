@@ -1,0 +1,47 @@
+:root {
+    --primaria: #0078d4; /* Azul Microsoft/ERP */
+    --primaria-dark: #005a9e;
+    --fundo-cinza: #f3f2f1;
+    --borda: #edebe9;
+    --texto: #323130;
+    --branco: #ffffff;
+    --sucesso: #107c10;
+    --erro: #a4262c;
+    --header-grid: #f8f8f8;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+    text-transform: lowercase; /* Tudo minúsculo como pedido */
+}
+
+body {
+    background-color: var(--fundo-cinza);
+    color: var(--texto);
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+}
+
+.btn-primavera {
+    background-color: var(--branco);
+    border: 1px solid #8a8886;
+    padding: 6px 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-primavera:hover {
+    background-color: #edebe9;
+}
+
+.input-erp {
+    border: 1px solid #8a8886;
+    padding: 5px;
+    outline: none;
+}
+
+.input-erp:focus {
+    border-color: var(--primaria);
+}

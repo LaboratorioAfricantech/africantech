@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>africantech | erp stocks</title>
+    
+    <!-- BLOQUEIO DE RENDERIZAÇÃO: Só liberta via JS após confirmar login -->
+    <style>
+        #app-shell { display: none; }
+        .loading-screen { 
+            height: 100vh; width: 100vw; display: flex; 
+            justify-content: center; align-items: center; 
+            background: #000d1a; color: white; font-family: sans-serif;
+        }
+    </style>
+
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body id="app-body">
+
+    <!-- Tela de espera inicial -->
+    <div id="loading-overlay" class="loading-screen">
+        <div>a validar acesso seguro...</div>
+    </div>
+
+    <!-- O sistema todo dentro deste ID -->
+    <div id="app-shell" style="flex-direction: column; height: 100vh; width: 100vw;">
+        
+        <nav class="toolbar">
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span><span></span><span></span>
+            </div>
+
+            <div class="logo-area">
+                <img src="assets/logo.png" alt="Logo" class="nav-logo" onerror="this.style.display='none'">
+                <span class="logo-text">africantech</span>
+            </div>
+            
+            <div class="menu-items" id="nav-main-menu">
+                <button onclick="navegar('dashboard')" id="btn-dashboard">painel</button>
+                <button onclick="navegar('stock')" id="btn-stock">inventário</button>
+                <button onclick="navegar('movimentos')" id="btn-movimentos">movimentos</button>
+                <button onclick="navegar('provincias')" id="btn-provincias" class="admin-only">unidades</button>
+                <button onclick="navegar('usuarios')" id="btn-usuarios" class="admin-only">utilizadores</button>
+            </div>
+
+            <div class="user-profile-nav" onclick="navegar('perfil')" id="nav-perfil-block">
+                <div class="avatar-circle">
+                    <img src="" id="nav-user-photo" class="nav-avatar-img" style="display:none;">
+                    <span id="nav-avatar-initials">--</span>
+                </div>
+                <div class="user-info-text">
+                    <span id="user-display-name">...</span>
+                    <small id="user-display-role">...</small>
+                </div>
+            </div>
+
+            <button onclick="fecharSessao()" class="btn-logout">sair</button>
+        </nav>
+
+        <main id="main-content">
+            <!-- As telas renderizam aqui -->
+        </main>
+
+        <footer class="erp-footer" id="main-footer">
+            <!-- Totais renderizam aqui -->
+        </footer>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="modal-confirmacao" class="modal">
+        <div class="modal-content confirm-box">
+            <div class="modal-header"><h3>confirmação</h3></div>
+            <div class="modal-body"><p id="confirm-mensagem">...</p></div>
+            <div class="modal-footer">
+                <button class="btn-primary" id="confirm-btn-ok">sim</button>
+                <button class="btn-primavera" id="confirm-btn-cancelar">não</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS (ORDEM OBRIGATÓRIA) -->
+    <script src="js/api.js"></script>
+    <script src="js/modules/dashboard.js"></script>
+    <script src="js/modules/stock.js"></script>
+    <script src="js/modules/usuarios.js"></script>
+    <script src="js/modules/movimentos.js"></script>
+    <script src="js/modules/provincias.js"></script>
+    <script src="js/modules/perfil.js"></script>
+    <script src="js/modules/ranking.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

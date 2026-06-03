@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>african tech - acesso seguro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.98);
+            --primary-gradient: linear-gradient(135deg, #004a99 0%, #0078d4 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            text-transform: lowercase;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000d1a;
+            /* fundo decorativo tech */
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 120, 212, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 74, 153, 0.2) 0%, transparent 40%);
+            overflow: hidden;
+            padding: 20px; /* Margem de segurança para o mobile */
+        }
+
+        /* animação de fundo - fibra de carbono */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.1;
+            animation: moveBg 60s linear infinite;
+        }
+
+        @keyframes moveBg {
+            from { transform: translate(0, 0); }
+            to { transform: translate(-20%, -20%); }
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 400px; /* Tamanho máximo no PC */
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-box {
+            background: var(--glass-bg);
+            padding: 40px 30px; /* Ajustado para mobile */
+            width: 100%; /* Ocupa 100% do container pai */
+            border-radius: 12px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            border-top: 6px solid #0078d4;
+            position: relative;
+        }
+
+        .logo-wrapper {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo-wrapper img {
+            height: 55px; 
+            margin-bottom: 12px;
+        }
+
+        .login-box h2 {
+            color: #004a99;
+            font-weight: 800;
+            font-size: 22px;
+            letter-spacing: -1px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .login-box p.subtitle {
+            color: #666;
+            font-size: 11px;
+            text-align: center;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-erp {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px; /* Fonte maior no mobile evita zoom automático no iOS */
+            background: #f9f9f9;
+            transition: all 0.3s ease;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .input-erp:focus {
+            border-color: #0078d4;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(0, 120, 212, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 74, 153, 0.4);
+        }
+
+        .btn-login:active { transform: translateY(0); }
+
+        #msg-erro {
+            background: #fde7e9;
+            color: #a4262c;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-top: 15px;
+            border-left: 4px solid #a4262c;
+            display: none;
+            text-align: center;
+        }
+
+        .footer-info {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 10px;
+            color: #999;
+            line-height: 1.5;
+        }
+
+        /* carregando spinner */
+        .loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Ajustes específicos para telas muito pequenas */
+        @media (max-width: 360px) {
+            .login-box { padding: 30px 20px; }
+            .brand-name { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-box">
+            <div class="logo-wrapper">
+                <!-- Substitua pelo caminho da sua logo -->
+                <img src="assets/logo.png" alt="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3061/3061341.png'">
+            
+                <p class="subtitle">gestão de stock </p>
+            </div>
+
+            <div class="form-group">
+                <label>e-mail de acesso</label>
+                <input type="email" id="email" class="input-erp" placeholder="email@africantech.co.mz">
+            </div>
+
+            <div class="form-group">
+                <label>palavra-passe</label>
+                <input type="password" id="senha" class="input-erp" placeholder="••••••••">
+            </div>
+
+            <button class="btn-login" id="btnLogin">
+                <span id="btnText">entrar no sistema</span>
+                <div class="loader" id="btnLoader"></div>
+            </button>
+
+            <p id="msg-erro"></p>
+
+            <div class="footer-info">
+                &copy; 2026 african tech, lda. <br> moçambique
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const btn = document.getElementById('btnLogin');
+        const btnText = document.getElementById('btnText');
+        const btnLoader = document.getElementById('btnLoader');
+        const erro = document.getElementById('msg-erro');
+
+        btn.addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+
+            if(!email || !senha) return;
+
+            erro.style.display = 'none';
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'block';
+            btn.disabled = true;
+
+            try {
+                const res = await api.request('/login', 'POST', { email, senha });
+
+                if (res.sucesso) {
+                    localStorage.setItem('token', res.token);
+                    localStorage.setItem('usuario', JSON.stringify(res.dados));
+                    setTimeout(() => { window.location.href = 'index.html'; }, 400);
+                } else {
+                    throw new Error(res.mensagem);
+                }
+            } catch (e) {
+                btnText.style.display = 'block';
+                btnLoader.style.display = 'none';
+                btn.disabled = false;
+                erro.innerText = e.message || "falha na ligação ao servidor";
+                erro.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
