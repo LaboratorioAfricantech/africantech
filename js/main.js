@@ -14,16 +14,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 2. Se houver login, limpa a tela de loading e mostra o sistema
-    document.getElementById('loading-overlay').style.display = 'none';
-    document.getElementById('app-shell').style.display = 'flex';
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const appShell = document.getElementById('app-shell');
+    
+    if (loadingOverlay) loadingOverlay.style.display = 'none';
+    if (appShell) appShell.style.display = 'flex';
 
     // 3. Inicializar a UI
     atualizarHeaderUI();
-    aplicarRestricoesUI();
+    
+    // CORREÇÃO AQUI: O nome da função estava diferente da definição abaixo
+    aplicarRestricoesPorNivel(); 
 
     // 4. Forçar a primeira renderização
     navegar('dashboard');
 });
+
 /**
  * ACTUALIZA DADOS DO UTILIZADOR NO TOPO (NOME, FUNÇÃO E AVATAR)
  */
@@ -31,31 +37,35 @@ function atualizarHeaderUI() {
     const usuarioJson = localStorage.getItem('usuario');
     if (!usuarioJson) return;
 
-    const usuario = JSON.parse(usuarioJson);
+    try {
+        const usuario = JSON.parse(usuarioJson);
 
-    const nameEl = document.getElementById('user-display-name');
-    const roleEl = document.getElementById('user-display-role');
-    const initialsEl = document.getElementById('nav-avatar-initials');
-    const photoImg = document.getElementById('nav-user-photo');
+        const nameEl = document.getElementById('user-display-name');
+        const roleEl = document.getElementById('user-display-role');
+        const initialsEl = document.getElementById('nav-avatar-initials');
+        const photoImg = document.getElementById('nav-user-photo');
 
-    // Actualiza o texto
-    if (nameEl) nameEl.innerText = usuario.nome.toLowerCase();
-    if (roleEl) roleEl.innerText = usuario.tipo_acesso;
-    
-    // Lógica do Avatar (Foto ou Iniciais)
-    if (usuario.foto_url && usuario.foto_url !== "") {
-        if (photoImg) {
-            photoImg.src = usuario.foto_url;
-            photoImg.style.display = 'block';
+        // Actualiza o texto (com fallback para evitar erro se nome for nulo)
+        if (nameEl) nameEl.innerText = (usuario.nome || "usuário").toLowerCase();
+        if (roleEl) roleEl.innerText = usuario.tipo_acesso || "acesso";
+        
+        // Lógica do Avatar (Foto ou Iniciais)
+        if (usuario.foto_url && usuario.foto_url !== "") {
+            if (photoImg) {
+                photoImg.src = usuario.foto_url;
+                photoImg.style.display = 'block';
+            }
+            if (initialsEl) initialsEl.style.display = 'none';
+        } else {
+            if (initialsEl) {
+                const iniciais = usuario.nome ? usuario.nome.substring(0, 2).toUpperCase() : "AT";
+                initialsEl.innerText = iniciais;
+                initialsEl.style.display = 'block';
+            }
+            if (photoImg) photoImg.style.display = 'none';
         }
-        if (initialsEl) initialsEl.style.display = 'none';
-    } else {
-        if (initialsEl) {
-            const iniciais = usuario.nome ? usuario.nome.substring(0, 2).toUpperCase() : "--";
-            initialsEl.innerText = iniciais;
-            initialsEl.style.display = 'block';
-        }
-        if (photoImg) photoImg.style.display = 'none';
+    } catch (e) {
+        console.error("Erro ao processar dados do usuário:", e);
     }
 }
 
@@ -63,12 +73,15 @@ function atualizarHeaderUI() {
  * ESCONDE ELEMENTOS QUE SÃO APENAS PARA ADMINISTRADORES
  */
 function aplicarRestricoesPorNivel() {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (!usuario) return;
+    const usuarioJson = localStorage.getItem('usuario');
+    if (!usuarioJson) return;
+
+    const usuario = JSON.parse(usuarioJson);
 
     if (usuario.tipo_acesso !== 'admin') {
         // Esconde botões do menu com a classe .admin-only
         document.querySelectorAll('.admin-only').forEach(el => {
+            el.style.removeProperty('display'); // Garante limpeza
             el.style.display = 'none';
         });
     }
@@ -76,21 +89,18 @@ function aplicarRestricoesPorNivel() {
 
 /**
  * MOTOR DE NAVEGAÇÃO PRINCIPAL (SPA)
- * @param {string} modulo - Nome do módulo a carregar (ex: stock, movimentos)
  */
 async function navegar(modulo) {
     const main = document.getElementById('main-content');
     const menu = document.getElementById('nav-main-menu');
     if (!main) return;
 
-    // Fecha menu no mobile ao clicar
     if (menu) menu.classList.remove('active');
 
     main.innerHTML = `<div class="loading">a carregar ${modulo}...</div>`;
     marcarMenuAtivo(modulo);
 
     try {
-        // Aguarda 50ms para o navegador processar o innerHTML antes de rodar a lógica do módulo
         await new Promise(r => setTimeout(r, 50));
 
         switch(modulo) {
@@ -101,17 +111,17 @@ async function navegar(modulo) {
             case 'provincias': await renderProvincias(); break;
             case 'perfil':     await renderPerfil(); break;
             case 'ranking':    await renderRanking(); break;
+            default: console.warn("Módulo não encontrado:", modulo);
         }
     } catch (e) {
-        console.error("Erro ao renderizar:", e);
-        main.innerHTML = `<div class="primavera-card">erro ao carregar dados.</div>`;
+        console.error("Erro ao renderizar módulo:", e);
+        main.innerHTML = `<div class="primavera-card">erro ao carregar dados de ${modulo}.</div>`;
     }
 }
-/**
- * GERE A APARÊNCIA DOS BOTÕES DO MENU
- */
+
 function toggleMenu() {
-    document.getElementById('nav-main-menu').classList.toggle('active');
+    const menu = document.getElementById('nav-main-menu');
+    if (menu) menu.classList.toggle('active');
 }
 
 function marcarMenuAtivo(modulo) {
@@ -120,13 +130,14 @@ function marcarMenuAtivo(modulo) {
     if (btn) btn.classList.add('active-nav');
     
     const perfil = document.getElementById('nav-perfil-block');
-    if (modulo === 'perfil') perfil.classList.add('active-nav');
-    else perfil.classList.remove('active-nav');
+    if (perfil) {
+        if (modulo === 'perfil') perfil.classList.add('active-nav');
+        else perfil.classList.remove('active-nav');
+    }
 }
 
-
 /**
- * LOGOUT COM CONFIRMAÇÃO CUSTOMIZADA
+ * LOGOUT COM CONFIRMAÇÃO
  */
 function fecharSessao() {
     exibirConfirmacao(
@@ -140,7 +151,7 @@ function fecharSessao() {
 }
 
 /**
- * FUNÇÃO DE MODAL DE CONFIRMAÇÃO (Substitui o alert/confirm do Windows)
+ * FUNÇÃO DE MODAL DE CONFIRMAÇÃO
  */
 function exibirConfirmacao(titulo, mensagem, callback) {
     const modal = document.getElementById('modal-confirmacao');
@@ -149,32 +160,31 @@ function exibirConfirmacao(titulo, mensagem, callback) {
     const btnOk = document.getElementById('confirm-btn-ok');
     const btnCancel = document.getElementById('confirm-btn-cancelar');
 
-    if (!modal) return;
+    // Se algum elemento não existir, usa o confirm padrão do navegador para não travar
+    if (!modal || !txtTitulo || !txtMensagem || !btnOk || !btnCancel) {
+        if (confirm(mensagem)) callback();
+        return;
+    }
 
-    // Preenche textos
     txtTitulo.innerText = titulo;
     txtMensagem.innerText = mensagem;
 
-    // Mostra o modal
-    modal.style.display = 'block';
+    // IMPORTANTE: Use 'flex' para o seu CSS de modal overlay
+    modal.style.display = 'flex';
 
-    // Limpa eventos antigos clonando o botão (evita disparos duplos)
     const novoBtnOk = btnOk.cloneNode(true);
     btnOk.parentNode.replaceChild(novoBtnOk, btnOk);
 
-    // Evento de confirmação
     novoBtnOk.onclick = () => {
         modal.style.display = 'none';
         callback();
     };
 
-    // Evento de cancelamento
     btnCancel.onclick = () => {
         modal.style.display = 'none';
     };
 }
 
-// Fechar modal ao clicar fora dele (UX)
 window.onclick = function(event) {
     const modalConfirm = document.getElementById('modal-confirmacao');
     if (event.target == modalConfirm) {

@@ -71,15 +71,19 @@
 
     <!-- Modal de Confirmação -->
     <div id="modal-confirmacao" class="modal">
-        <div class="modal-content confirm-box">
-            <div class="modal-header"><h3>confirmação</h3></div>
-            <div class="modal-body"><p id="confirm-mensagem">...</p></div>
-            <div class="modal-footer">
-                <button class="btn-primary" id="confirm-btn-ok">sim</button>
-                <button class="btn-primavera" id="confirm-btn-cancelar">não</button>
-            </div>
+    <div class="modal-content" style="width: 350px; margin-top: 15vh;">
+        <div class="modal-header" style="background: #f8f8f8;">
+            <h3 id="confirm-titulo" style="margin:0; font-size:14px; color:var(--primary-dark);">confirmação</h3>
+        </div>
+        <div class="modal-body" style="text-align: center; padding: 30px 20px;">
+            <p id="confirm-mensagem" style="margin:0; font-size:13px; color:var(--text-main);">deseja realmente sair do sistema?</p>
+        </div>
+        <div class="modal-footer" style="background: #f3f2f1; display: flex; justify-content: center; gap: 10px;">
+            <button class="btn-primary" id="confirm-btn-ok" style="background: var(--primary);">sim, continuar</button>
+            <button class="btn-primavera" id="confirm-btn-cancelar">cancelar</button>
         </div>
     </div>
+</div>
 
     <!-- SCRIPTS (ORDEM OBRIGATÓRIA) -->
     <script src="js/api.js"></script>
