@@ -1,0 +1,134 @@
+/* 
+==========================================================================
+   AFRICANTECH ERP - MÓDULO DE NOTIFICAÇÕES (VERSÃO FINAL CORRIGIDA)
+   Resolução: Badge alinhado e Scroll no Painel
+========================================================================== 
+*/
+
+/* 1. CONTENTOR DO ÍCONE (O PAI) */
+.notif-container {
+    position: relative; /* ESSENCIAL: Prende o número "19" aqui dentro */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    font-size: 18px; /* Tamanho do sino */
+}
+
+.notif-container:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* 2. O BADGE (O CÍRCULO VERMELHO COM O NÚMERO) */
+.notif-badge {
+    position: absolute;
+    top: 2px;          /* Ajuste de altura */
+    right: 2px;        /* Ajuste lateral para ficar no ombro do sino */
+    background: var(--danger);
+    color: white;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 1px 4px;
+    border-radius: 10px;
+    border: 2px solid var(--primary-dark); /* Dá destaque sobre o azul */
+    min-width: 15px;
+    text-align: center;
+    display: none;     /* JS muda para 'block' quando houver alertas */
+    pointer-events: none; /* O clique passa direto para o sino */
+}
+
+/* 3. O PAINEL FLUTUANTE (A LISTA) */
+.notif-panel {
+    display: none; 
+    position: absolute;
+    top: 50px;         /* Distância do topo da barra */
+    right: 0;          /* Alinhado à direita do ícone */
+    width: 350px;
+    
+    /* LIMITES DE ALTURA E SCROLL */
+    max-height: 450px; 
+    overflow-y: auto; 
+    overflow-x: hidden;
+    
+    background: #ffffff !important;
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    z-index: 10000;    /* Garante que fica por cima de tudo */
+    border-radius: 4px;
+    animation: slideInNotif 0.2s ease-out;
+}
+
+/* 4. CABEÇALHO DO PAINEL */
+.notif-header {
+    background: #f8f8f8;
+    padding: 12px 15px;
+    font-weight: 800;
+    font-size: 11px;
+    color: var(--primary-dark);
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    z-index: 11;
+}
+
+/* 5. ITENS DA LISTA */
+.notif-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    background: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.notif-item:hover {
+    background: #f0f7ff;
+}
+
+.notif-item strong {
+    display: block;
+    font-size: 11px;
+    color: #333;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+
+.notif-item p {
+    margin: 0;
+    font-size: 11px;
+    color: #666;
+    line-height: 1.4;
+    word-break: break-all; /* Quebra links longos (PDFs) para não fugir */
+}
+
+.notif-item small {
+    display: block;
+    margin-top: 8px;
+    font-size: 9px;
+    color: #999;
+}
+
+/* 6. ESTILO DA BARRA DE SCROLL (MAIS ELEGANTE) */
+.notif-panel::-webkit-scrollbar {
+    width: 6px;
+}
+.notif-panel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+.notif-panel::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+.notif-panel::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* ANIMAÇÃO */
+@keyframes slideInNotif {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

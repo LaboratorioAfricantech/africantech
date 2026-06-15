@@ -271,11 +271,26 @@ async function finalizarTRF() {
     if(res.sucesso) { alert("despachado!"); renderProvincias(); }
 }
 
-async function confirmarRecebimentoTRF(id) {
-    if(!confirm("confirma recepção?")) return;
-    const res = await api.request(`/transferencias/concluir/${id}`, 'PUT', { observacoes_destino: "recebido via web" });
-    if(res.sucesso) { alert("actualizado!"); carregarGuiasTransferencia(); }
+async function confirmarRecebimentoTRF(codigoGuia) {
+    exibirConfirmacao(
+        "confirmar carga", 
+        `deseja confirmar a recepção de todos os materiais da guia ${codigoGuia}?`, 
+        async () => {
+     
+            const res = await api.request(`/transferencias/concluir/${codigoGuia}`, 'PUT', { 
+                observacoes_destino: "confirmado via painel " 
+            });
+
+            if(res.sucesso) {
+                alert(res.mensagem);
+                carregarGuiasTransferencia();
+            } else {
+                alert("erro: " + res.mensagem);
+            }
+        }
+    );
 }
+
 
 function mudarAbaProvincia(aba) {
     document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));

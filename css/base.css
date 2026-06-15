@@ -1,0 +1,246 @@
+/* 
+==========================================================================
+   SISTEMA AFRICANTECH ERP STOCKS - BASE DE LAYOUT RESPONSIVA
+   Versão: 5.0 (Correção de Quebra Mobile & Blindagem de Layout)
+========================================================================== 
+*/
+
+/* --- 1. VARIÁVEIS DE CORES E MEDIDAS --- */
+:root {
+    --primary: #005a9e;          /* Azul Primavera Principal */
+    --primary-dark: #004578;     /* Azul Focus */
+    --accent: #0078d4;           /* Azul Realce */
+    --bg-system: #f3f2f1;        /* Fundo Neutro ERP */
+    --white: #ffffff;
+    --border: #d2d0ce;           /* Cor de bordas de software */
+    --danger: #a4262c;           /* Vermelho Sair / Alerta */
+    
+    --toolbar-height: 55px;
+    --footer-height: 40px;
+    --sidebar-width: 230px;
+}
+
+/* --- 2. RESET E COMPORTAMENTO GLOBAL --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    text-transform: lowercase; /* Identidade Africantech */
+}
+
+html, body {
+    height: 100vh;
+    width: 100vw;
+    background-color: var(--bg-system);
+    overflow: hidden; /* Evita scroll na página toda, o scroll deve ser interno */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- 3. TOOLBAR (BARRA SUPERIOR BLINDADA) --- */
+.toolbar {
+    height: var(--toolbar-height);
+    background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    flex-shrink: 0;
+    z-index: 5000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Logo Area */
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.nav-logo {
+    height: 32px;
+    width: auto;
+    filter: brightness(0) invert(1);
+}
+
+.logo-text {
+    color: white !important;
+    font-weight: 800 !important;
+    font-size: 16px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px;
+}
+
+/* Menu de Navegação (Agora com Scroll Horizontal em Mobile) */
+.menu-items {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    height: 100%;
+    overflow-x: auto; /* Permite scroll se não couber */
+    scrollbar-width: none; /* Esconde scroll no Firefox */
+}
+
+.menu-items::-webkit-scrollbar { display: none; } /* Esconde scroll no Chrome/Safari */
+
+.menu-items button {
+    background: transparent;
+    border: none;
+    color: #deecf9;
+    padding: 0 12px;
+    height: 100%;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+    transition: 0.2s;
+    white-space: nowrap; /* Não quebra linha no botão */
+}
+
+.menu-items button:hover { background: rgba(255,255,255,0.1); color: white; }
+.menu-items button.active-nav {
+    color: white;
+    background: rgba(0,0,0,0.15);
+    border-bottom: 3px solid #00e5ff;
+}
+
+/* Lado Direito: Notificações e Perfil */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* --- 4. PERFIL DO UTILIZADOR (FIX PARA NÃO QUEBRAR) --- */
+.user-profile-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.05);
+}
+
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.nav-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nav-avatar-initials {
+    color: white;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.user-info-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+#user-display-name { font-size: 11px; font-weight: 600; color: white; }
+#user-display-role { font-size: 9px; color: #c7e0f4; opacity: 0.8; }
+
+.btn-logout {
+    background: var(--danger) !important;
+    color: white !important;
+    border: none;
+    padding: 5px 10px;
+    font-weight: 700;
+    font-size: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* --- 5. RESPONSIVIDADE (MOBILE FIX) --- */
+
+@media (max-width: 900px) {
+    .logo-text { display: none; } /* Esconde o nome da empresa */
+    .user-info-text { display: none; } /* Esconde nome e cargo do user */
+}
+
+@media (max-width: 600px) {
+    .menu-items {
+        justify-content: flex-start; /* Alinha botões à esquerda para scroll */
+        padding-left: 10px;
+    }
+    
+    .menu-items button {
+        padding: 0 10px;
+        font-size: 11px;
+    }
+
+    .toolbar {
+        padding: 0 8px;
+    }
+}
+
+/* --- 6. MAIN CONTENT --- */
+#main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    background: var(--bg-system);
+}
+
+/* --- 7. RODAPÉ --- */
+.erp-footer {
+    height: var(--footer-height);
+    background: #e6e6e6;
+    border-top: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 15px;
+    align-items: center;
+    flex-shrink: 0;
+    font-size: 11px;
+}
+
+/* --- 8. UTILS --- */
+.loading { 
+    padding: 40px; 
+    text-align: center; 
+    color: #666; 
+    font-style: italic; 
+    font-size: 13px;
+    width: 100%;
+}
+
+.badge {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+input[type="password"], 
+input[type="email"],
+.no-lowercase {
+    text-transform: none !important;
+}

@@ -1,38 +1,46 @@
 /**
  * js/modules/usuarios.js
- * MÓDULO DE GESTÃO DE RECURSOS HUMANOS E PERMISSÕES
+ * MÓDULO DE GESTÃO DE RECURSOS HUMANOS E PERMISSÕES (RH)
  */
 
 async function renderUsuarios() {
     const main = document.getElementById('main-content');
     if (!main) return;
 
-    // 1. Estrutura Principal com Design Primavera
+    // 1. ESTRUTURA CABEÇALHO + BARRA DE FILTROS HORIZONTAL
     main.innerHTML = `
-        <div class="module-header" style="flex-shrink: 0;">
+        <div class="module-header">
             <div>
                 <h2>gestão de utilizadores e técnicos</h2>
-                <p id="user-status-info" style="font-size:11px; color:var(--text-secondary);">controlo de acessos e equipas provinciais</p>
+                <p style="font-size:11px; color:#666;">controlo de acessos, equipas provinciais e segurança</p>
             </div>
-            <button class="btn-primary" onclick="abrirModalUsuario()">+ novo utilizador</button>
+            <button class="btn-primary" onclick="abrirModalUsuario()">+ cadastrar funcionário</button>
         </div>
 
-        <!-- BARRA DE FILTROS DE RH -->
-        <div class="filter-bar" style="flex-shrink: 0;">
-            <input type="text" id="search-user" class="input-erp" style="flex: 2;" 
-                   placeholder="pesquisar por nome, função ou telefone..." onkeyup="filtrarUsuariosLocal()">
+        <!-- BARRA DE FILTROS (USA A CLASSE DO CSS/USUARIOS.CSS) -->
+        <div class="users-filter-bar">
+            <div class="field-group" style="flex: 2;">
+                <label style="font-size:10px; font-weight:bold; color:#888;">PESQUISAR:</label>
+                <input type="text" id="search-user" class="input-erp" placeholder="nome, função ou contacto..." onkeyup="filtrarUsuariosLocal()">
+            </div>
             
-            <select id="filtro-provincia-user" class="input-erp" style="flex: 1;" onchange="filtrarUsuariosLocal()">
-                <option value="Todas">todas as províncias</option>
-            </select>
+            <div class="field-group" style="flex: 1;">
+                <label style="font-size:10px; font-weight:bold; color:#888;">UNIDADE:</label>
+                <select id="filtro-provincia-user" class="input-erp" onchange="filtrarUsuariosLocal()">
+                    <option value="Todas">todas as províncias</option>
+                </select>
+            </div>
 
-            <select id="filtro-acesso" class="input-erp" style="flex: 1;" onchange="filtrarUsuariosLocal()">
-                <option value="Todos">todos os níveis</option>
-                <option value="admin">administrador</option>
-                <option value="tecnico">técnico / logística</option>
-            </select>
+            <div class="field-group" style="flex: 1;">
+                <label style="font-size:10px; font-weight:bold; color:#888;">NÍVEL:</label>
+                <select id="filtro-acesso" class="input-erp" onchange="filtrarUsuariosLocal()">
+                    <option value="Todos">todos os níveis</option>
+                    <option value="admin">administrador</option>
+                    <option value="responsavel">responsável / técnico</option>
+                </select>
+            </div>
 
-            <button class="btn-primavera" onclick="renderUsuarios()">🔄 actualizar</button>
+            <button class="btn-primavera" style="margin-top:18px;" onclick="renderUsuarios()">🔄</button>
         </div>
 
         <!-- GRELHA DE UTILIZADORES -->
@@ -40,77 +48,66 @@ async function renderUsuarios() {
             <table class="erp-table">
                 <thead>
                     <tr>
-                        <th width="250">nome do funcionário</th>
+                        <th width="50"></th>
+                        <th>nome do funcionário</th>
                         <th width="150">função / cargo</th>
                         <th width="150">unidade provincial</th>
                         <th width="120">contacto</th>
-                        <th width="120">nível acesso</th>
+                        <th width="120">acesso</th>
                         <th width="100">estado</th>
-                        <th width="80" align="center">acções</th>
+                        <th width="100" align="center">acções</th>
                     </tr>
                 </thead>
                 <tbody id="lista-usuarios-body">
-                    <tr><td colspan="7" align="center">a carregar lista de pessoal...</td></tr>
+                    <tr><td colspan="8" align="center" style="padding:40px;">a carregar lista de pessoal...</td></tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- RODAPÉ DE RESUMO DE RH -->
         <footer class="erp-footer">
-            <div class="footer-section">
-                <div class="stat-box">
-                    <label>total pessoal:</label>
-                    <span id="footer-user-total">0</span>
-                </div>
-                <div style="border-left: 1px solid #ccc; height: 20px; margin: 0 15px;"></div>
-                <div class="stat-box">
-                    <label>activos:</label>
-                    <span id="footer-user-ativos" style="color:var(--success)">0</span>
-                </div>
-            </div>
-            <div class="summary-line">
-                <label>segurança do sistema:</label>
-                <strong>africantech</strong>
-            </div>
+            <div>total de pessoal: <strong id="footer-user-total">0</strong></div>
+            <div>utilizadores activos: <strong id="footer-user-ativos" style="color:var(--success)">0</strong></div>
         </footer>
 
-        <!-- MODAL DE CADASTRO DE UTILIZADOR -->
+        <!-- MODAL: CADASTRAR/EDITAR UTILIZADOR -->
         <div id="modal-user" class="modal">
             <div class="modal-content" style="width: 500px;">
                 <div class="modal-header">
-                    <h3>cadastrar novo funcionário</h3>
-                    <span style="cursor:pointer" onclick="fecharModalUsuario()">&times;</span>
+                    <h3>ficha de funcionário</h3>
+                    <span onclick="fecharModalUsuario()" style="cursor:pointer; font-size:20px;">&times;</span>
                 </div>
                 <div class="modal-body">
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
                         <div style="grid-column: span 2;">
-                            <label style="font-size:10px; font-weight:bold;">nome completo:</label>
+                            <label style="font-size:10px; font-weight:bold;">NOME COMPLETO:</label>
                             <input type="text" id="reg-u-nome" class="input-erp" style="width:100%">
                         </div>
                         <div>
-                            <label style="font-size:10px; font-weight:bold;">e-mail (login):</label>
-                            <input type="email" id="reg-u-email" class="input-erp" style="width:100%">
+                            <label style="font-size:10px; font-weight:bold;">E-MAIL (LOGIN):</label>
+                            <!-- Adicionado no-lowercase para permitir letras reais -->
+                            <input type="email" id="reg-u-email" class="input-erp no-lowercase" style="width:100%">
                         </div>
                         <div>
-                            <label style="font-size:10px; font-weight:bold;">senha inicial:</label>
-                            <input type="password" id="reg-u-senha" class="input-erp" style="width:100%">
+                            <label style="font-size:10px; font-weight:bold;">SENHA:</label>
+                            <!-- Adicionado no-lowercase para aceitar MAIÚSCULAS na senha -->
+                            <input type="password" id="reg-u-senha" class="input-erp no-lowercase" style="width:100%">
                         </div>
                         <div>
-                            <label style="font-size:10px; font-weight:bold;">função:</label>
-                            <input type="text" id="reg-u-funcao" class="input-erp" placeholder="ex: técnico de frio" style="width:100%">
+                            <label style="font-size:10px; font-weight:bold;">FUNÇÃO:</label>
+                            <input type="text" id="reg-u-funcao" class="input-erp" style="width:100%" placeholder="ex: técnico de frio">
                         </div>
                         <div>
-                            <label style="font-size:10px; font-weight:bold;">telefone:</label>
+                            <label style="font-size:10px; font-weight:bold;">TELEFONE:</label>
                             <input type="text" id="reg-u-fone" class="input-erp" style="width:100%">
                         </div>
                         <div>
-                            <label style="font-size:10px; font-weight:bold;">unidade provincial:</label>
+                            <label style="font-size:10px; font-weight:bold;">PROVÍNCIA:</label>
                             <select id="reg-u-provincia" class="input-erp" style="width:100%"></select>
                         </div>
                         <div>
-                            <label style="font-size:10px; font-weight:bold;">nível de acesso:</label>
+                            <label style="font-size:10px; font-weight:bold;">NÍVEL ACESSO:</label>
                             <select id="reg-u-acesso" class="input-erp" style="width:100%">
-                                <option value="tecnico">técnico / logística</option>
+                                <option value="responsavel">responsável / técnico</option>
                                 <option value="admin">administrador</option>
                             </select>
                         </div>
@@ -124,56 +121,36 @@ async function renderUsuarios() {
         </div>
     `;
 
-    // 2. Carregar Províncias e Dados
-    setTimeout(async () => {
-        await carregarProvinciasFiltro();
-        await buscarListaUsuarios();
-    }, 50);
+    // 2. CARREGAMENTO DE DADOS INICIAIS
+    await carregarProvinciasFiltro();
+    await buscarListaUsuarios();
 }
 
 /**
- * Puxa as províncias para os selects de filtro e cadastro
- */
-async function carregarProvinciasFiltro() {
-    const res = await api.request('/provincias');
-    const fld = document.getElementById('filtro-provincia-user');
-    const reg = document.getElementById('reg-u-provincia');
-
-    if (res.sucesso && res.dados) {
-        res.dados.forEach(p => {
-            const html = `<option value="${p.nome}">${p.nome.toLowerCase()}</option>`;
-            const htmlReg = `<option value="${p.id}">${p.nome.toLowerCase()}</option>`;
-            if (fld) fld.innerHTML += html;
-            if (reg) reg.innerHTML += htmlReg;
-        });
-    }
-}
-
-/**
- * Busca funcionários no Backend Railway
+ * BUSCA TODOS OS UTILIZADORES
  */
 async function buscarListaUsuarios() {
     const res = await api.request('/funcionarios/lista-geral?busca=&provincia=Todas');
-    if (res.sucesso) {
+    const tbody = document.getElementById('lista-usuarios-body');
+    if (!tbody) return;
+
+    if (res && res.sucesso) {
         window.dadosUsuariosCache = res.dados;
         atualizarTabelaUsuariosHtml(res.dados);
+    } else {
+        tbody.innerHTML = `<tr><td colspan="8" align="center" style="color:red;">erro ao carregar lista.</td></tr>`;
     }
 }
 
 /**
- * Renderiza as linhas e actualiza rodapé de pessoal
+ * RENDERIZA AS LINHAS DA TABELA (ESTILO RH)
  */
 function atualizarTabelaUsuariosHtml(lista) {
     const tbody = document.getElementById('lista-usuarios-body');
-    const fTotal = document.getElementById('footer-user-total');
-    const fAtivos = document.getElementById('footer-user-ativos');
-
     if (!tbody) return;
 
     if (!lista || lista.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" align="center" style="padding:20px;">nenhum funcionário encontrado.</td></tr>`;
-        if (fTotal) fTotal.innerText = "0";
-        if (fAtivos) fAtivos.innerText = "0";
+        tbody.innerHTML = `<tr><td colspan="8" align="center" style="padding:20px; color:#999;">nenhum utilizador encontrado.</td></tr>`;
         return;
     }
 
@@ -185,25 +162,23 @@ function atualizarTabelaUsuariosHtml(lista) {
         
         return `
             <tr>
-                <td>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <div class="avatar-circle" style="width:25px; height:25px; font-size:9px; background:#e1dfdd; color:#666;">
-                            ${u.foto_url ? `<img src="${u.foto_url}" class="nav-avatar-img">` : iniciais}
-                        </div>
-                        <strong>${u.nome.toLowerCase()}</strong>
+                <td align="center">
+                    <div class="user-table-avatar" style="width:30px; height:30px; border-radius:50%; background:#eee; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:10px;">
+                        ${u.foto_url ? `<img src="${u.foto_url}" style="width:100%; height:100%; object-fit:cover;">` : iniciais}
                     </div>
                 </td>
+                <td><strong>${u.nome.toLowerCase()}</strong></td>
                 <td>${u.funcao.toLowerCase()}</td>
                 <td>📍 ${u.provincia_nome ? u.provincia_nome.toLowerCase() : 'sede / geral'}</td>
                 <td>${u.telefone || '---'}</td>
-                <td><span class="badge" style="background:${u.tipo_acesso === 'admin' ? '#e1f5fe' : '#f3f2f1'}">${u.tipo_acesso}</span></td>
+                <td><span class="badge-role" style="background:#f3f2f1; padding:2px 8px; border-radius:10px; font-size:10px;">${u.tipo_acesso}</span></td>
                 <td>
-                    <span style="color: ${u.ativo ? 'var(--success)' : 'var(--danger)'}; font-weight:bold;">
+                    <span class="${u.ativo ? 'status-active' : 'status-blocked'}" style="color: ${u.ativo ? 'var(--success)' : 'var(--danger)'}; font-weight:800;">
                         ${u.ativo ? '● activo' : '○ bloqueado'}
                     </span>
                 </td>
                 <td align="center">
-                    <button class="btn-primavera" style="padding:2px 5px;" onclick="toggleStatusUsuario(${u.id}, ${u.ativo})">
+                    <button class="btn-action-table" style="background:white; border:1px solid #ccc; padding:4px 10px; font-size:11px; cursor:pointer;" onclick="toggleStatusUsuario(${u.id}, ${u.ativo})">
                         ${u.ativo ? 'bloquear' : 'activar'}
                     </button>
                 </td>
@@ -211,12 +186,12 @@ function atualizarTabelaUsuariosHtml(lista) {
         `;
     }).join('');
 
-    if (fTotal) fTotal.innerText = lista.length;
-    if (fAtivos) fAtivos.innerText = ativos;
+    document.getElementById('footer-user-total').innerText = lista.length;
+    document.getElementById('footer-user-ativos').innerText = ativos;
 }
 
 /**
- * Filtro Instantâneo
+ * FILTRAGEM LOCAL INSTANTÂNEA
  */
 function filtrarUsuariosLocal() {
     const termo = document.getElementById('search-user').value.toLowerCase();
@@ -226,9 +201,7 @@ function filtrarUsuariosLocal() {
     if (!window.dadosUsuariosCache) return;
 
     const filtrados = window.dadosUsuariosCache.filter(u => {
-        const matchTexto = u.nome.toLowerCase().includes(termo) || 
-                           u.funcao.toLowerCase().includes(termo) || 
-                           (u.telefone && u.telefone.includes(termo));
+        const matchTexto = u.nome.toLowerCase().includes(termo) || u.funcao.toLowerCase().includes(termo);
         const matchProv = prov === "Todas" || u.provincia_nome === prov;
         const matchAcesso = acesso === "Todos" || u.tipo_acesso === acesso;
         return matchTexto && matchProv && matchAcesso;
@@ -238,8 +211,31 @@ function filtrarUsuariosLocal() {
 }
 
 /**
- * Cadastro de Utilizador (POST /funcionarios)
+ * AUXILIARES (MODAIS E PROVÍNCIAS)
  */
+async function carregarProvinciasFiltro() {
+    const res = await api.request('/provincias');
+    const fld = document.getElementById('filtro-provincia-user');
+    const reg = document.getElementById('reg-u-provincia');
+
+    if (res && res.sucesso && res.dados) {
+        res.dados.forEach(p => {
+            const opt = `<option value="${p.nome}">${p.nome.toLowerCase()}</option>`;
+            const optId = `<option value="${p.id}">${p.nome.toLowerCase()}</option>`;
+            if (fld) fld.innerHTML += opt;
+            if (reg) reg.innerHTML += optId;
+        });
+    }
+}
+
+async function toggleStatusUsuario(id, statusAtual) {
+    const acao = statusAtual ? "bloquear" : "activar";
+    if (!confirm(`deseja realmente ${acao} este utilizador?`)) return;
+
+    const res = await api.request(`/funcionarios/${id}/status`, 'PATCH', { ativo: !statusAtual });
+    if (res && res.sucesso) buscarListaUsuarios();
+}
+
 async function salvarNovoUsuario() {
     const dados = {
         nome: document.getElementById('reg-u-nome').value,
@@ -251,30 +247,17 @@ async function salvarNovoUsuario() {
         tipo_acesso: document.getElementById('reg-u-acesso').value
     };
 
-    if (!dados.nome || !dados.email || !dados.senha) return alert("preencha os campos obrigatórios.");
+    if (!dados.nome || !dados.email || !dados.senha) return alert("nome, e-mail e senha são obrigatórios.");
 
     const res = await api.request('/funcionarios', 'POST', dados);
-    if (res.sucesso) {
-        alert("utilizador cadastrado com sucesso!");
+    if (res && res.sucesso) {
+        alert("utilizador cadastrado!");
         fecharModalUsuario();
         renderUsuarios();
     } else {
-        alert("erro: " + res.mensagem);
+        alert("erro: " + (res ? res.mensagem : "falha de rede"));
     }
 }
 
-/**
- * Bloquear ou Activar Utilizador (PATCH /funcionarios/:id/status)
- */
-async function toggleStatusUsuario(id, statusActual) {
-    const acao = statusActual ? "bloquear" : "activar";
-    if (!confirm(`deseja realmente ${acao} este utilizador?`)) return;
-
-    const res = await api.request(`/funcionarios/${id}/status`, 'PATCH', { ativo: !statusActual });
-    if (res.sucesso) {
-        buscarListaUsuarios();
-    }
-}
-
-function abrirModalUsuario() { const m = document.getElementById('modal-user'); if(m) m.style.display = 'block'; }
-function fecharModalUsuario() { const m = document.getElementById('modal-user'); if(m) m.style.display = 'none'; }
+function abrirModalUsuario() { document.getElementById('modal-user').style.display = 'flex'; }
+function fecharModalUsuario() { document.getElementById('modal-user').style.display = 'none'; }

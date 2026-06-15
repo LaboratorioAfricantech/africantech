@@ -1,0 +1,125 @@
+/* --- FICHA DE PERFIL LUXUOSA --- */
+
+/* Contentor que ocupa o ecrã todo para centrar o card */
+.profile-card-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center;     /* Centraliza verticalmente */
+    padding: 40px;
+    background: #f3f2f1;
+    overflow-y: auto;
+}
+
+.profile-card {
+    background: white;
+    width: 100%;
+    max-width: 500px; /* Largura ideal para um formulário de perfil */
+    border: 1px solid #d2d0ce;
+    border-radius: 4px;
+    padding: 40px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+    text-align: center;
+    border-top: 6px solid #005a9e; /* Azul Africantech */
+}
+
+.profile-photo-big {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: #0078d4;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    font-weight: 800;
+    color: white;
+    border: 5px solid white;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    overflow: hidden;
+}
+
+.profile-photo-big img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-card h3 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 5px;
+    text-transform: capitalize;
+}
+
+.profile-card p.subtitle {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 30px;
+}
+
+/* Grelha de Informações */
+.profile-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    text-align: left;
+    margin-bottom: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.profile-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.profile-field label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #999;
+    text-transform: uppercase;
+}
+
+.profile-field span {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f2f1;
+}
+
+/* Secção de Segurança */
+.security-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dotted #ccc;
+    text-align: left;
+}
+
+.security-section h4 {
+    font-size: 11px;
+    font-weight: 800;
+    color: #a4262c; /* Vermelho para atenção */
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.btn-update-profile {
+    width: 100%;
+    background: #0078d4;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 2px;
+    margin-top: 20px;
+}
+
+.btn-update-profile:hover { background: #005a9e; }

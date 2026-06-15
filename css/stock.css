@@ -1,0 +1,54 @@
+/* css/stock.css */
+
+/* Contentor que divide o ecrã em dois */
+.stock-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Barra Lateral */
+.category-sidebar {
+    width: 230px;
+    min-width: 230px;
+    background: #fff;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.cat-tree {
+    list-style: none;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Estilo do item da lista */
+.parent-label {
+    padding: 12px 15px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #333;
+    border-bottom: 1px solid #f3f2f1;
+    transition: 0.2s;
+}
+
+/* CORREÇÃO DO AZUL: Só quem tem a classe active fica azul */
+.parent-label.active {
+    background: #005a9e !important;
+    color: #fff !important;
+    font-weight: bold;
+}
+
+/* Área da Direita (Tabela) */
+.stock-main-content {
+    flex: 1 !important; /* ISTO OBRIGA A TABELA A APARECER */
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    background: #f3f2f1;
+}

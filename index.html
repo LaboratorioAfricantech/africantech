@@ -15,8 +15,17 @@
         }
     </style>
 
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/style.css">
+ <link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/stock.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/notificacoes.css">
+<link rel="stylesheet" href="css/projetos.css">
+<link rel="stylesheet" href="css/perfil.css">   
+<link rel="stylesheet" href="css/movimentos.css">  
+<link rel="stylesheet" href="css/projetos.css">    
+<link rel="stylesheet" href="css/usuarios.css">   
 </head>
 <body id="app-body">
 
@@ -28,38 +37,45 @@
     <!-- O sistema todo dentro deste ID -->
     <div id="app-shell" style="flex-direction: column; height: 100vh; width: 100vw;">
         
-        <nav class="toolbar">
-            <div class="hamburger" onclick="toggleMenu()">
-                <span></span><span></span><span></span>
-            </div>
+<nav class="toolbar">
+    <div class="logo-area">
+        <img src="assets/logo.png" class="nav-logo">
+        <span class="logo-text">AFRICANTECH</span>
+    </div>
 
-            <div class="logo-area">
-                <img src="assets/logo.png" alt="Logo" class="nav-logo" onerror="this.style.display='none'">
-                <span class="logo-text">africantech</span>
-            </div>
-            
-            <div class="menu-items" id="nav-main-menu">
-                <button onclick="navegar('dashboard')" id="btn-dashboard">painel</button>
-                <button onclick="navegar('stock')" id="btn-stock">inventário</button>
-                <button onclick="navegar('movimentos')" id="btn-movimentos">movimentos</button>
-                <button onclick="navegar('provincias')" id="btn-provincias" class="admin-only">unidades</button>
-                <button onclick="navegar('usuarios')" id="btn-usuarios" class="admin-only">utilizadores</button>
-            </div>
+    <div class="menu-items" id="nav-main-menu">
+        <button onclick="navegar('dashboard')" id="btn-dashboard">painel principal</button>
+        <button onclick="navegar('stock')" id="btn-stock">inventário</button>
+        <button onclick="navegar('movimentos')" id="btn-movimentos">movimentações</button>
+        <button onclick="navegar('provincias')" id="btn-provincias" class="admin-only">unidades</button>
+        <button onclick="navegar('usuarios')" id="btn-usuarios" class="admin-only">utilizadores</button>
+    </div>
 
-            <div class="user-profile-nav" onclick="navegar('perfil')" id="nav-perfil-block">
-                <div class="avatar-circle">
-                    <img src="" id="nav-user-photo" class="nav-avatar-img" style="display:none;">
-                    <span id="nav-avatar-initials">--</span>
-                </div>
-                <div class="user-info-text">
-                    <span id="user-display-name">...</span>
-                    <small id="user-display-role">...</small>
-                </div>
+    <div class="header-right" style="display:flex; align-items:center; gap:15px; margin-left:auto;">
+        <!-- NOTIFICAÇÕES -->
+        <div class="notif-container" onclick="toggleNotificacoes(event)">
+            🔔<span class="notif-badge" id="notif-count">0</span>
+            <div id="notif-panel" class="notif-panel">
+                <div class="notif-header">notificações</div>
+                <div id="notif-list"></div>
             </div>
+        </div>
 
-            <button onclick="fecharSessao()" class="btn-logout">sair</button>
-        </nav>
+        <!-- PERFIL -->
+        <div class="user-profile-nav" onclick="navegar('perfil')" id="nav-perfil-block">
+            <div class="avatar-circle">
+                <img src="" id="nav-user-photo" style="display:none;" class="nav-avatar-img">
+                <span id="nav-avatar-initials"></span>
+            </div>
+            <div class="user-info-text">
+                <span id="user-display-name"></span>
+                <small id="user-display-role"></small>
+            </div>
+        </div>
 
+        <button onclick="fecharSessao()" class="btn-logout">sair</button>
+    </div>
+</nav>
         <main id="main-content">
             <!-- As telas renderizam aqui -->
         </main>
@@ -85,8 +101,14 @@
     </div>
 </div>
 
-    <!-- SCRIPTS (ORDEM OBRIGATÓRIA) -->
+
+    <!-- 1. Dependências Externas -->
+    <!-- <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script> -->
+    
+    <!-- 2. Configuração de Base -->
     <script src="js/api.js"></script>
+
+    <!-- 3. Módulos de Componentes  -->
     <script src="js/modules/dashboard.js"></script>
     <script src="js/modules/stock.js"></script>
     <script src="js/modules/usuarios.js"></script>
@@ -94,6 +116,9 @@
     <script src="js/modules/provincias.js"></script>
     <script src="js/modules/perfil.js"></script>
     <script src="js/modules/ranking.js"></script>
+    <script src="js/modules/projetos.js"></script>
+
+    <!-- 4. MOTOR PRINCIPAL  -->
     <script src="js/main.js"></script>
 </body>
 </html>

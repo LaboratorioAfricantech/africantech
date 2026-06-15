@@ -1,0 +1,67 @@
+/* 
+==========================================================================
+   AFRICANTECH ERP - MÓDULO DE UTILIZADORES (RH)
+========================================================================== 
+*/
+
+/* 1. FILTROS (HORIZONTAL) */
+.users-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: #fafafa;
+    border-bottom: 1px solid #d2d0ce;
+}
+
+.users-filter-bar input { flex: 2; }
+.users-filter-bar select { flex: 1; }
+
+/* 2. TABELA DE UTILIZADORES */
+.user-table-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    color: #666;
+    overflow: hidden;
+}
+
+.user-table-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 3. BADGES DE ACESSO E ESTADO */
+.badge-role {
+    background: #f3f2f1;
+    color: #333;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.status-active { color: #107c10; font-weight: 800; }
+.status-blocked { color: #a4262c; font-weight: 800; }
+
+/* 4. BOTÃO DE ACÇÃO NA TABELA */
+.btn-action-table {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.btn-action-table:hover {
+    background: #f0f0f0;
+    border-color: #999;
+}

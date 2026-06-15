@@ -73,10 +73,10 @@ async function renderDashboard() {
                             <tr>
                                 <td style="color:#666">${new Date(m.data_movimento).toLocaleDateString()}</td>
                                 <td>
-                                    <span class="badge ${m.tipo === 'ENTRADA' ? 'status-green' : 'status-red'}" style="width: 80px; display: inline-block; text-align: center;">
-                                        ${m.tipo.toLowerCase()}
-                                    </span>
-                                </td>
+    <span class="badge ${m.tipo === 'ENTRADA' ? 'status-green' : 'status-red'}">
+        ${m.tipo.toLowerCase()}
+    </span>
+</td>
                                 <td>
                                     <strong>${m.item_nome.toLowerCase()}</strong><br>
                                     <small style="color:#999">projecto: ${m.projeto_nome.toLowerCase()}</small>

@@ -1,0 +1,254 @@
+/* 
+==========================================================================
+   SISTEMA AFRICANTECH ERP STOCKS - COMPONENTES GLOBAIS
+   Foco: Grelhas Estilo Excel, Alertas Coloridos e Painéis Flutuantes
+========================================================================== 
+*/
+
+/* --- 1. GRELHAS E TABELAS (ESTILO EXCEL / PRIMAVERA) --- */
+.table-container {
+    flex: 1;
+    overflow: auto;
+    background: var(--white);
+    border: 1px solid var(--border);
+    position: relative;
+}
+
+.erp-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Impede que a tabela trema ou mude de largura sozinha */
+}
+
+/* Cabeçalho Fixo no Topo */
+.erp-table thead th {
+    position: sticky;
+    top: 0;
+    background: #f0f0f0;
+    z-index: 100;
+    padding: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-align: left;
+    border: 1px solid var(--border);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* Células e Linhas */
+.erp-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    border-right: 1px solid #f3f2f1;
+    font-size: 12px;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Coloca "..." em textos muito longos */
+}
+
+/* Efeito de realce ao passar o rato */
+.erp-table tr:hover {
+    background-color: var(--row-hover) !important;
+    cursor: pointer;
+}
+
+/* Zebra Stripes (Opcional para facilitar leitura) */
+.erp-table tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* --- 2. BADGES E ESTADOS DE STOCK (CORES DE IMPACTO) --- */
+
+/* SAÍDA / STOCK ZERO (VERMELHO) */
+.status-saida, .badge.status-red, .stock-zero {
+    background-color: #fde7e9 !important;
+    color: #a4262c !important;
+}
+
+.status-saida, .badge.status-red {
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-size: 10px;
+    display: inline-block;
+    border: 1px solid #f5c6cb;
+}
+
+/* ENTRADA / STOCK OK (VERDE) */
+.status-entrada, .badge.status-green {
+    background-color: #dff6dd !important;
+    color: #107c10 !important;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-size: 10px;
+    display: inline-block;
+    border: 1px solid #c3e6cb;
+}
+
+/* --- 3. PAINEL DE NOTIFICAÇÕES (SININHO) --- */
+.notif-panel {
+    display: none;
+    position: absolute;
+    top: 55px; /* Logo abaixo da toolbar */
+    right: 20px;
+    width: 340px;
+    background: white !important;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    z-index: 6000; /* Acima de tudo */
+    border-radius: 4px;
+    overflow: hidden;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.notif-header {
+    background: #f8f8f8;
+    padding: 12px 15px;
+    font-weight: 800;
+    font-size: 11px;
+    border-bottom: 1px solid var(--border);
+    color: var(--primary-dark);
+    text-transform: uppercase;
+}
+
+.notif-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notif-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    background: white;
+    cursor: pointer;
+    transition: 0.2s;
+    color: #333 !important; /* Força letras escuras no fundo branco */
+}
+
+.notif-item:hover { background: #f0f7ff; }
+.notif-item strong { display: block; font-size: 12px; color: #222; margin-bottom: 3px; text-transform: uppercase; }
+.notif-item p { margin: 0; font-size: 11px; color: #666; line-height: 1.4; }
+.notif-item small { display: block; margin-top: 5px; color: #999; font-size: 9px; }
+
+/* Badge de contagem no ícone do sino */
+.notif-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--danger);
+    color: white;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 10px;
+    border: 1.5px solid var(--primary-dark);
+}
+
+/* --- 4. MODAIS E CAIXAS DE DIÁLOGO --- */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 8000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Overlay escuro */
+    backdrop-filter: blur(2px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 550px;
+    border-radius: 4px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    border-top: 6px solid var(--primary);
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background: #f8f8f8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 { font-size: 14px; font-weight: 800; color: var(--primary-dark); text-transform: uppercase; }
+
+.modal-body { padding: 25px; }
+
+.modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #eee;
+    background: #f3f2f1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* --- 5. INPUTS E FORMULÁRIOS ERP --- */
+.input-erp {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    font-size: 13px;
+    background: white;
+    width: 100%;
+    border-radius: 2px;
+    outline: none;
+}
+
+.input-erp:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(0,120,212,0.1);
+}
+
+/* Input Amarelo de Edição (Grelha) */
+.input-grid {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 4px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.input-grid:focus {
+    background: #fffde7 !important;
+    outline: 1.5px solid var(--warning);
+}
+
+/* --- 6. BOTÕES --- */
+.btn-primary {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-weight: 700;
+    border-radius: 2px;
+    transition: 0.2s;
+}
+.btn-primary:hover { background: var(--primary-dark); }
+
+.btn-primavera {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 7px 15px;
+    cursor: pointer;
+    font-size: 11px;
+    color: var(--text-main);
+}
+.btn-primavera:hover { background: #fafafa; border-color: #999; }
