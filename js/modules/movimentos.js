@@ -1,5 +1,6 @@
 /**
- * js/modules/movimentos.js - Versão Final com Registo de Obra Restaurado
+ * js/modules/movimentos.js - VERSÃO ABSOLUTA FINAL E COMPLETA
+ * Funcionalidades: Filtros Combinados + Lançamento por Modal + Registo de Obra + PDF + Paginação
  */
 
 let itensDocumento = []; 
@@ -8,10 +9,12 @@ const itensPorPagina = 15;
 window.fullHistorico = [];
 
 /**
- * FUNÇÃO PRINCIPAL: Renderiza a tela de Movimentações e Auditoria
+ * 1. RENDERIZAÇÃO DA TELA PRINCIPAL
  */
 async function renderMovimentos() {
     const main = document.getElementById('main-content');
+    if (!main) return;
+
     main.innerHTML = `
         <div class="mov-header-box">
             <div>
@@ -19,23 +22,25 @@ async function renderMovimentos() {
                 <p style="font-size: 11px; color: #666;">registo de guias e histórico detalhado de operações</p>
             </div>
             <div style="display:flex; gap:10px;">
-                <button class="btn-new-in" onclick="prepararMovimento('ENTRADA')">nova entrada</button>
-                <button class="btn-new-out" onclick="prepararMovimento('SAIDA')">nova saída</button>
+                <button class="btn-new-in" onclick="prepararMovimento('ENTRADA')">📥 nova entrada</button>
+                <button class="btn-new-out" onclick="prepararMovimento('SAIDA')">📤 nova saída</button>
             </div>
         </div>
 
-        <!-- Área onde a Guia (Card) será desenhada -->
+        <!-- Área onde a Guia (Card) aparece -->
         <div id="area-lancamento-guia"></div>
 
+        <!-- BARRA DE FILTROS HORIZONTAL CORRIGIDA -->
         <div class="filter-bar-horizontal">
             <div class="filter-group">
                 <label>período</label>
                 <div style="display:flex; gap:5px; align-items:center;">
                     <input type="date" id="filt-data-inicio" class="input-erp-mini" value="${new Date(new Date().setDate(new Date().getDate()-30)).toISOString().split('T')[0]}">
-                    <span>até</span>
+                    <span style="font-size:10px; color:#999;">até</span>
                     <input type="date" id="filt-data-fim" class="input-erp-mini" value="${new Date().toISOString().split('T')[0]}">
                 </div>
             </div>
+
             <div class="filter-group">
                 <label>operação</label>
                 <select id="filt-tipo-mov" class="input-erp-mini">
@@ -44,10 +49,14 @@ async function renderMovimentos() {
                     <option value="SAIDA">saídas</option>
                 </select>
             </div>
-            <button class="btn-primary" onclick="carregarHistoricoAuditado()">filtrar histórico</button>
-            <button class="btn-primavera" onclick="imprimirRelatorioHistorico()">exportar pdf</button>
+
+            <div style="display:flex; gap:10px; align-items: flex-end;">
+                <button class="btn-primary" onclick="carregarHistoricoAuditado()">filtrar histórico</button>
+                <button class="btn-primavera" onclick="imprimirRelatorioHistorico()">exportar pdf</button>
+            </div>
         </div>
 
+        <!-- TABELA DE AUDITORIA -->
         <div class="table-container">
             <table class="erp-table">
                 <thead>
@@ -62,28 +71,30 @@ async function renderMovimentos() {
                         <th>operador</th>
                     </tr>
                 </thead>
-                <tbody id="hist-body"></tbody>
+                <tbody id="hist-body">
+                    <tr><td colspan="8" align="center" style="padding:40px;">a carregar auditoria...</td></tr>
+                </tbody>
             </table>
         </div>
 
         <footer class="erp-footer">
             <div class="pagination">
                 <button class="btn-primavera" onclick="mudarPaginaHist(-1)">anterior</button>
-                <span id="page-info">página 1</span>
+                <span id="page-info" style="margin: 0 10px; font-weight:800;">página 1</span>
                 <button class="btn-primavera" onclick="mudarPaginaHist(1)">próxima</button>
             </div>
-            <div id="total-registos-hist">0 movimentos</div>
+            <div id="total-registos-hist" style="font-weight:bold; color:var(--primary);">0 movimentos</div>
         </footer>
 
         <!-- MODAIS AUXILIARES -->
         <div id="modal-container-selecao"></div>
-        <div id="modal-obra" class="modal">
+        <div id="modal-obra" class="modal" style="display:none; z-index:15000;">
             <div class="modal-content" style="width:400px;">
                 <div class="modal-header"><h3>registar nova obra</h3><span onclick="fecharModalObra()" style="cursor:pointer; font-size:24px;">&times;</span></div>
                 <div class="modal-body">
-                    <label style="font-size:10px; font-weight:bold;">nome da obra:</label>
-                    <input type="text" id="nova-obra-nome" class="input-erp" style="width:100%; margin-bottom:10px;">
-                    <label style="font-size:10px; font-weight:bold;">cliente:</label>
+                    <label style="font-size:10px; font-weight:bold; color:#666;">NOME DA OBRA:</label>
+                    <input type="text" id="nova-obra-nome" class="input-erp" style="width:100%; margin-bottom:15px;">
+                    <label style="font-size:10px; font-weight:bold; color:#666;">CLIENTE:</label>
                     <input type="text" id="nova-obra-cliente" class="input-erp" style="width:100%;">
                 </div>
                 <div class="modal-footer">
@@ -93,9 +104,13 @@ async function renderMovimentos() {
             </div>
         </div>
     `;
+
     carregarHistoricoAuditado();
 }
 
+/**
+ * 2. PREPARAÇÃO DA GUIA DE LANÇAMENTO (CARD)
+ */
 async function prepararMovimento(tipo) {
     const area = document.getElementById('area-lancamento-guia');
     itensDocumento = []; 
@@ -116,9 +131,10 @@ async function prepararMovimento(tipo) {
                         <option value="">-- seleccione a obra --</option>
                         ${resProj.dados ? resProj.dados.map(p => `<option value="${p.id}">${p.nome.toLowerCase()}</option>`).join('') : ''}
                     </select>
+                    <button class="btn-primavera" onclick="abrirModalObra()" style="font-weight:bold; width:35px;" title="nova obra">+</button>
                 </div>
             </div>
-            <div class="field-group"><label>observações:</label><input type="text" id="mov-obs" class="input-erp" placeholder="notas..."></div>
+            <div class="field-group"><label>observações / notas:</label><input type="text" id="mov-obs" class="input-erp" placeholder="notas da saída..."></div>
         `;
     }
 
@@ -136,17 +152,10 @@ async function prepararMovimento(tipo) {
                 <button class="btn-primary" onclick="abrirModalSelecaoMaterial()">+ adicionar materiais do stock</button>
             </div>
 
-            <!-- ÁREA DE ITENS COM SCROLL -->
             <div class="guia-items-scroll-area" style="max-height: 250px; overflow-y: auto; border-bottom: 1px solid #ddd;">
                 <table class="guia-items-table">
                     <thead style="position: sticky; top: 0; background: #eee; z-index: 5;">
-                        <tr>
-                            <th width="120">sku</th>
-                            <th>descrição do material</th>
-                            <th width="100" align="center">disponível</th>
-                            <th width="120" align="center">quantidade</th>
-                            <th width="40"></th>
-                        </tr>
+                        <tr><th width="120">sku</th><th>descrição do material</th><th width="100" align="center">disponível</th><th width="120" align="center">quantidade</th><th width="40"></th></tr>
                     </thead>
                     <tbody id="grid-itens-mov">
                         <tr><td colspan="5" align="center" style="padding:30px; color:#999;">a lista está vazia...</td></tr>
@@ -154,15 +163,17 @@ async function prepararMovimento(tipo) {
                 </table>
             </div>
 
-            <!-- RODAPÉ DE AÇÕES (ONDE ESTÁ O BOTÃO) -->
             <div class="guia-footer-actions">
-                <button class="btn-cancel-guia" onclick="document.getElementById('area-lancamento-guia').innerHTML=''">cancelar</button>
+                <button class="btn-primavera" onclick="document.getElementById('area-lancamento-guia').innerHTML=''">cancelar</button>
                 <button class="btn-save-guia" onclick="finalizarMovimento('${tipo}')">gravar guia no sistema</button>
             </div>
         </div>
     `;
 }
 
+/**
+ * 3. SELEÇÃO DE MATERIAL (MODAL TABELA)
+ */
 async function abrirModalSelecaoMaterial() {
     const container = document.getElementById('modal-container-selecao');
     const res = await api.request('/stock'); 
@@ -170,10 +181,10 @@ async function abrirModalSelecaoMaterial() {
 
     container.innerHTML = `
         <div class="modal" style="display:flex; z-index:11000;">
-            <div class="modal-content" style="width:900px; max-width:95%;">
-                <div class="modal-header"><h3>seleccionar materiais</h3><span onclick="fecharModalSelecao()" style="cursor:pointer; font-size:24px;">&times;</span></div>
+            <div class="modal-content modal-selecao" style="width:900px; max-width:95%;">
+                <div class="modal-header"><h3>seleccionar materiais do inventário</h3><span onclick="fecharModalSelecao()" style="cursor:pointer; font-size:24px;">&times;</span></div>
                 <div class="filter-bar" style="padding:15px; background:#f9f9f9;">
-                    <input type="text" id="busca-ref-modal" class="input-erp" placeholder="pesquisar..." style="width:100%;" onkeyup="filtrarSelecaoLocal(this.value)">
+                    <input type="text" id="busca-ref-modal" class="input-erp" placeholder="pesquisar por nome, sku ou categoria..." style="width:100%; border-color:#0078d4;" oninput="filtrarSelecaoLocal(this.value)">
                 </div>
                 <div style="max-height: 400px; overflow-y: auto;">
                     <table class="erp-table">
@@ -181,38 +192,44 @@ async function abrirModalSelecaoMaterial() {
                             <tr><th width="100">sku</th><th width="200">categoria</th><th>descrição</th><th width="80" align="center">stock</th><th width="60">acção</th></tr>
                         </thead>
                         <tbody id="body-selecao-material">
-                            ${res.dados.map(i => `<tr onclick='adicionarItemLinha(${JSON.stringify(i)})'><td><span class="badge">${i.sku}</span></td><td><small>${i.categoria.toLowerCase()}</small></td><td><strong>${i.nome.toLowerCase()}</strong></td><td align="center">${i.quantidade_real}</td><td><button class="btn-add-item">add</button></td></tr>`).join('')}
+                            ${res.dados.map(i => `<tr onclick='adicionarItemLinha(${JSON.stringify(i)})'><td><span class="badge">${i.sku}</span></td><td><small>${i.categoria.toLowerCase()}</small></td><td><strong>${i.nome.toLowerCase()}</strong></td><td align="center"><b>${i.quantidade_real}</b></td><td align="center"><button class="btn-primary" style="padding:4px 8px; font-size:10px;">add</button></td></tr>`).join('')}
                         </tbody>
                     </table>
                 </div>
-                <div class="modal-footer"><button class="btn-primary" onclick="fecharModalSelecao()">concluir</button></div>
+                <div class="modal-footer"><button class="btn-primary" onclick="fecharModalSelecao()">concluir selecção</button></div>
             </div>
         </div>
     `;
     window.dadosSelecaoCache = res.dados;
 }
 
+function filtrarSelecaoLocal(termo) {
+    const t = termo.toLowerCase();
+    const filtrados = window.dadosSelecaoCache.filter(i => i.nome.toLowerCase().includes(t) || i.sku.toLowerCase().includes(t) || i.categoria.toLowerCase().includes(t));
+    document.getElementById('body-selecao-material').innerHTML = filtrados.map(i => `<tr onclick='adicionarItemLinha(${JSON.stringify(i)})'><td><span class="badge">${i.sku}</span></td><td><small>${i.categoria.toLowerCase()}</small></td><td><strong>${i.nome.toLowerCase()}</strong></td><td align="center"><b>${i.quantidade_real}</b></td><td align="center"><button class="btn-primary" style="padding:4px 8px; font-size:10px;">add</button></td></tr>`).join('');
+}
+
 function adicionarItemLinha(item) {
     if (itensDocumento.some(i => i.id === item.id)) return;
     itensDocumento.push({ ...item, qtd_mov: 1 });
-    renderizarGrelhaItens();
+    renderGridItensGuia();
 }
 
-function renderizarGrelhaItens() {
+function renderGridItensGuia() {
     const tbody = document.getElementById('grid-itens-mov');
     if (!tbody) return;
     tbody.innerHTML = itensDocumento.map((item, index) => `
         <tr>
-            <td><span class="badge">${item.sku}</span></td>
-            <td><strong>${item.nome.toLowerCase()}</strong><br><small>${item.categoria.toLowerCase()}</small></td>
-            <td align="center">${item.quantidade_real}</td>
+            <td><span class="badge" style="background:#e1dfdd;">${item.sku}</span></td>
+            <td><strong>${item.nome.toLowerCase()}</strong><br><small style="color:#999;">${item.categoria.toLowerCase()}</small></td>
+            <td align="center"><b>${item.quantidade_real}</b></td>
             <td align="center"><input type="number" class="input-grid" value="${item.qtd_mov}" onchange="itensDocumento[${index}].qtd_mov = this.value"></td>
             <td align="center"><button class="btn-logout" style="padding:2px 8px" onclick="removerItem(${index})">×</button></td>
         </tr>`).join('');
 }
 
 /**
- * LOGICA DE OBRAS (RESTAURO)
+ * 4. LOGICA DE OBRAS, GRAVAÇÃO E PDF
  */
 function abrirModalObra() { document.getElementById('modal-obra').style.display = 'flex'; }
 function fecharModalObra() { document.getElementById('modal-obra').style.display = 'none'; }
@@ -220,78 +237,84 @@ async function salvarNovaObra() {
     const nome = document.getElementById('nova-obra-nome').value;
     const cliente = document.getElementById('nova-obra-cliente').value;
     const user = JSON.parse(localStorage.getItem('usuario'));
-    if(!nome) return alert("nome da obra é obrigatório.");
-    
+    if(!nome) return alert("nome da obra obrigatório.");
     const res = await api.request('/projetos', 'POST', { nome, cliente, provincia_id: user.provincia_id });
-    if (res.sucesso) { 
-        alert("obra registada com sucesso!"); 
-        fecharModalObra(); 
-        prepararMovimento('SAIDA'); // Recarrega a guia para atualizar o select de obras
-    }
+    if (res.sucesso) { alert("obra registada!"); fecharModalObra(); prepararMovimento('SAIDA'); }
 }
 
-// Funções auxiliares mantidas
-function filtrarSelecaoLocal(t) { /* lógica de filtragem local */ }
-function removerItem(i) { itensDocumento.splice(i, 1); renderizarGrelhaItens(); }
-function fecharModalSelecao() { document.getElementById('modal-container-selecao').innerHTML = ''; }
-
-/**
- * GRAVAÇÃO E AUDITORIA
- */
 async function finalizarMovimento(tipo) {
     if (itensDocumento.length === 0) return alert("lista vazia.");
     const projId = document.getElementById('mov-projeto-id')?.value;
     if (tipo === 'SAIDA' && !projId) return alert("seleccione a obra destino.");
 
-    const payload = {
-        observacoes: document.getElementById('mov-obs').value,
-        data: document.getElementById('mov-data').value,
+    const payload = { 
+        observacoes: document.getElementById('mov-obs').value, 
+        data: document.getElementById('mov-data').value 
     };
 
     if (tipo === 'ENTRADA') {
         payload.itens = itensDocumento.map(i => ({ material_id: i.id, quantidade: i.qtd_mov }));
         const res = await api.request('/movimentos/entrada', 'POST', payload);
-        if (res && res.sucesso) { alert("sucesso!"); renderMovimentos(); }
+        if (res && res.sucesso) { alert("entrada gravada!"); renderMovimentos(); }
     } else {
         payload.projeto_id = projId;
         payload.codigo_guia = `WEB-${Date.now()}`;
         payload.materiais = itensDocumento.map(i => ({ id: i.id, quantidade: i.qtd_mov }));
         const res = await api.request('/movimentos/saida', 'POST', payload);
-        if (res && res.sucesso) { alert("sucesso!"); renderMovimentos(); }
+        if (res && res.sucesso) { alert("saída gravada!"); renderMovimentos(); }
     }
 }
 
 async function carregarHistoricoAuditado() {
+    const tbody = document.getElementById('hist-body');
+    const inicio = document.getElementById('filt-data-inicio').value;
+    const fim = document.getElementById('filt-data-fim').value;
+    const tipoFiltro = document.getElementById('filt-tipo-mov').value;
+    if (!tbody) return;
+
     const res = await api.request(`/historico`); 
     if (res && res.sucesso) {
-        window.fullHistorico = res.dados;
+        window.fullHistorico = res.dados.filter(m => {
+            const dataM = m.data_movimento.split('T')[0];
+            const matchData = dataM >= inicio && dataM <= fim;
+            const matchTipo = (tipoFiltro === "Todos") || (m.tipo.toUpperCase() === tipoFiltro.toUpperCase());
+            return matchData && matchTipo;
+        });
+        paginaAtualHist = 1;
         exibirPaginaHist();
     }
 }
 
 function exibirPaginaHist() {
     const tbody = document.getElementById('hist-body');
-    if (!tbody) return;
-    tbody.innerHTML = window.fullHistorico.slice(0, 15).map(m => `
+    const start = (paginaAtualHist - 1) * itensPorPagina;
+    const listaPagina = window.fullHistorico.slice(start, start + itensPorPagina);
+
+    document.getElementById('page-info').innerText = `página ${paginaAtualHist}`;
+    document.getElementById('total-registos-hist').innerText = `${window.fullHistorico.length} movimentos encontrados`;
+
+    if (listaPagina.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" align="center" style="padding:20px;">nenhum registo.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = listaPagina.map(m => `
         <tr class="${m.tipo === 'ENTRADA' ? 'status-green' : 'status-red'}">
             <td style="color:#666; font-size:11px;">${new Date(m.data_movimento).toLocaleString()}</td>
-            <td><span class="badge ${m.tipo === 'ENTRADA' ? 'status-green' : 'status-red'}">${m.tipo.toLowerCase()}</span></td>
+            <td><span class="badge ${m.tipo === 'ENTRADA' ? 'status-green' : 'status-red'}" style="width:70px; text-align:center;">${m.tipo.toLowerCase()}</span></td>
             <td><small><b>${m.codigo_guia || '---'}</b></small></td>
             <td><strong>${m.material_nome.toLowerCase()}</strong></td>
             <td align="center"><b>${parseFloat(m.quantidade).toFixed(2)}</b></td>
             <td>${m.projeto_nome ? m.projeto_nome.toLowerCase() : '---'}</td>
             <td>${m.provincia_nome ? m.provincia_nome.toLowerCase() : '---'}</td>
-            <td>${m.funcionario_nome ? m.funcionario_nome.toLowerCase() : 'sistema'}</td>
+            <td>${m.funcionario_nome.toLowerCase()}</td>
         </tr>`).join('');
 }
 
 function mudarPaginaHist(dir) {
-    const totalPaginas = Math.ceil(window.fullHistorico.length / itensPorPagina);
-    const novaPag = paginaAtualHist + dir;
-    if (novaPag > 0 && novaPag <= totalPaginas) {
-        paginaAtualHist = novaPag;
-        exibirPaginaHist();
-    }
+    const total = Math.ceil(window.fullHistorico.length / itensPorPagina);
+    const nova = paginaAtualHist + dir;
+    if (nova > 0 && nova <= total) { paginaAtualHist = nova; exibirPaginaHist(); }
 }
 
 async function imprimirRelatorioHistorico() {
@@ -299,6 +322,8 @@ async function imprimirRelatorioHistorico() {
     const fim = document.getElementById('filt-data-fim').value;
     const tipo = document.getElementById('filt-tipo-mov').value;
     const token = localStorage.getItem('token');
-    const url = `https://africanstocks-backend-production.up.railway.app/api/v1/relatorios/pdf-historico?inicio=${inicio}&fim=${fim}&tipo=${tipo}&token=${token}`;
-    window.open(url, '_blank');
+    window.open(`https://africanstocks-backend-production.up.railway.app/api/v1/relatorios/pdf-historico?inicio=${inicio}&fim=${fim}&tipo=${tipo}&token=${token}`, '_blank');
 }
+
+function removerItem(i) { itensDocumento.splice(i, 1); renderGridItensGuia(); }
+function fecharModalSelecao() { document.getElementById('modal-container-selecao').innerHTML = ''; }
