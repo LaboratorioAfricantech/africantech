@@ -55,7 +55,7 @@ async function renderDashboard() {
             <div class="primavera-card" style="padding: 0; overflow: hidden;">
                 <div style="padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                     <h3 style="margin:0; font-size: 14px; color: var(--primary-dark);">recentes movimentações de stock</h3>
-                    <span class="badge" style="background: var(--primary); color: white;">últimos 3 registos</span>
+                    <span class="badge" style="background: var(--primary); color: white;">últimos 5 registos</span>
                 </div>
                 
                 <table class="erp-table">
